@@ -36,6 +36,7 @@ app.get("/login", async (req, res) => {
     "/auth/callback",
     true
   );
+  console.log("auth route", authRoute);
   return res.redirect(authRoute);
 });
 
@@ -47,6 +48,16 @@ app.get("/auth/callback", async (req, res) => {
       res,
       req.query as unknown as AuthQuery
     ); // req.query must be cast to unkown and then AuthQuery in order to be accepted
+    const session = await Shopify.Utils.loadCurrentSession(req, res);
+    console.log("session", session);
+
+    fs.writeFile("./access_token.txt", session.accessToken, (err: any) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      //file written successfully
+    });
   } catch (error) {
     console.error(error); // in practice these should be handled more gracefully
   }
